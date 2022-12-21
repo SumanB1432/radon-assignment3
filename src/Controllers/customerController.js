@@ -144,5 +144,17 @@ const createCustomer = async function (req, res) {
     return res.status(500).send({ status: false, message: error.message });
   }
 };
+const getCustomerDetail=async function(req,res){
+  const detail=await customerModel.find({status:'ACTIVE'})
+   return res.status(200).send({status:true,data:detail})
+  }
+const deleteCustomer=async function(req,res){
+  const customerid=req.params.customerId
+  const data=await customerModel.findOneAndUpdate({customerId:customerid,status:"ACTIVE"},{status:"INACTIVE"},{new:true})
+  if(!data){
+    return res.status(404).send({status:false,message:"data not found"})
+  }
+  return res.status(200).send({status:"true",data:data})
+}
 
-module.exports = { createCustomer };
+module.exports = { createCustomer,getCustomerDetail,deleteCustomer };
