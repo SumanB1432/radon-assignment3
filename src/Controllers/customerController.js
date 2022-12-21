@@ -1,4 +1,4 @@
-const customerModel = require("../Modules/customeModel");
+const customerModel = require("../Modules/customerModel");
 
 let isValid = (data) => {
   if (typeof data == "string" && data.trim().length == 0) return false;
@@ -10,6 +10,8 @@ let mobileRegex = /^[7-9][0-9]{9}$/;
 let dateRegex = /^\d{2}\/\d{2}\/\d{4}$/;
 let emailRegex = /^\w+@[a-zA-Z_]+?\.[a-zA-Z]{2,3}$/;
 let statusArr = ["ACTIVE", "INACTIVE"];
+
+/////////////////////////////------------------------CREATE CUSTOMER-------------------//////////////////////////////////////
 
 const createCustomer = async function (req, res) {
   try {
@@ -24,6 +26,8 @@ const createCustomer = async function (req, res) {
       customerId,
       status,
     } = data;
+
+    /*******************************VALIDATIONS ***********************************************/
     if (!Object.keys(data).length) {
       return res.status(400).send({
         status: false,
@@ -68,12 +72,10 @@ const createCustomer = async function (req, res) {
       status: "ACTIVE",
     });
     if (findMobile) {
-      return res
-        .status(400)
-        .send({
-          status: false,
-          message: `${mobileNumber} is already registered`,
-        });
+      return res.status(400).send({
+        status: false,
+        message: `${mobileNumber} is already registered`,
+      });
     }
     if (!isValid(DOB)) {
       return res
@@ -136,6 +138,8 @@ const createCustomer = async function (req, res) {
           .send({ status: false, message: `status should be in ${statusArr}` });
       }
     }
+
+    /***********************************CREATE DATA IN DATA BASE ***********************************************/
     const createData = await customerModel.create(data);
     return res
       .status(201)
@@ -144,17 +148,33 @@ const createCustomer = async function (req, res) {
     return res.status(500).send({ status: false, message: error.message });
   }
 };
-const getCustomerDetail=async function(req,res){
-  const detail=await customerModel.find({status:'ACTIVE'})
-   return res.status(200).send({status:true,data:detail})
-  }
-const deleteCustomer=async function(req,res){
-  const customerid=req.params.customerId
-  const data=await customerModel.findOneAndUpdate({customerId:customerid,status:"ACTIVE"},{status:"INACTIVE"},{new:true})
-  if(!data){
-    return res.status(404).send({status:false,message:"data not found"})
-  }
-  return res.status(200).send({status:"true",data:data})
-}
 
-module.exports = { createCustomer,getCustomerDetail,deleteCustomer };
+/////////////////////////-----------------------GET CUSTOMER--------------------------//////////////////////////////////////
+const getCustomerDetail = async function (req, res) {
+  try {
+    const detail = await customerModel.find({ status: "ACTIVE" });
+    return res.status(200).send({ status: true, data: detail });
+  } catch (err) {
+    return res.status(500).send({ status: false, message: err.message });
+  }
+};
+//////////////////////////////////-------------DELETE CUSTOMER------------------------///////////////////////////////////
+
+const deleteCustomer = async function (req, res) {
+  try {
+    const customerid = req.params.customerId;
+    const data = await customerModel.findOneAndUpdate(
+      { customerId: customerid, status: "ACTIVE" },
+      { status: "INACTIVE" },
+      { new: true }
+    );
+    if (!data) {
+      return res.status(404).send({ status: false, message: "data not found" });
+    }
+    return res.status(200).send({ status: "true", data: data });
+  } catch (err) {
+    return res.status(500).send({ status: false, message: err.message });
+  }
+};
+
+module.exports = { createCustomer, getCustomerDetail, deleteCustomer };

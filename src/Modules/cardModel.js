@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-const objectId = mongoose.Schema.Types.ObjectId;
+
 
 let cardSchema = new mongoose.Schema({
     cardNumber: {
@@ -24,9 +24,8 @@ let cardSchema = new mongoose.Schema({
         type: String
     },
     customerId: {
-        type: objectId,
-        refer: "Customer",
         required: true,
+        type:String,
 
     }
 
