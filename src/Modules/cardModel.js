@@ -4,7 +4,8 @@ const mongoose = require("mongoose");
 let cardSchema = new mongoose.Schema({
     cardNumber: {
         type: Number,
-        required: true
+        required: true,
+        unique:true,
     },
     cardType: {
         type: String,
@@ -26,6 +27,7 @@ let cardSchema = new mongoose.Schema({
     customerId: {
         required: true,
         type:String,
+        unique:true,
 
     }
 
